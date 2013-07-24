@@ -1,0 +1,93 @@
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+class Welcome extends CI_Controller {
+
+	/**
+	 * Index Page for this controller.
+	 *
+	 * Maps to the following URL
+	 * 		http://example.com/index.php/welcome
+	 *	- or -  
+	 * 		http://example.com/index.php/welcome/index
+	 *	- or -
+	 * Since this controller is set as the default controller in 
+	 * config/routes.php, it's displayed at http://example.com/
+	 *
+	 * So any other public methods not prefixed with an underscore will
+	 * map to /index.php/welcome/<method_name>
+	 * @see http://codeigniter.com/user_guide/general/urls.html
+	 */
+	public function index($url)
+	{
+		
+		$this->load->model('tweetmodel');
+		//perform a pregmatch for underscores
+		$match = preg_match("@_@", $url);
+
+		//let's perform a quick security check
+		if(!ctype_alnum($url) && $match != TRUE)
+		{
+			//throw an error but first make sure it isn't home
+			if($url != home)
+			{
+				return define("ERROR_420", TRUE);
+			}
+		}
+		else
+		{
+			//now let's check if it exists in the db
+			$date = date("Y-m-d");
+      			$grab = $this->tweetmodel->tweet_select("coverup",$url);
+			$tweet_id = $grab[0]->id;
+			$grab_tweetcnt = $this->tweetmodel->tweet_clickcountselect("tweet_id",$tweet_id,"date",$date);
+			$totcnt = count($grab_tweetcnt);
+			if($totcnt>0)
+			{
+				$totcnt =$grab_tweetcnt[0]->count;
+				$count= $totcnt+1;
+				$click_count = $this->tweetmodel->tweet_clickcountupdate("count",$count,"id",$grab_tweetcnt[0]->id);
+				$count = count($grab);
+			}
+			else
+			{
+				$count=1;
+				$click_count = $this->tweetmodel->tweet_clickcountinsert($tweet_id,$date,$count);
+				$count = count($grab);
+			}
+		        //if less than one, throw an error but first make sure it isn't home
+			if($count < 1 && $url !=home)
+			{
+				return define("ERROR_421", TRUE);
+			}
+			else
+      			{
+			        //otherwise, grab the tweet, and take them to Twitter
+			        //no need to sanitize this since it's going to Twitter, they'll take care of it on their
+     				//part =P
+      
+				$tweet = trim(stripslashes($grab[0]->tweet));
+				$tweet = urlencode($tweet); 
+      
+			        //now redirect them
+			        if($url == 'home')
+			        {
+					return;
+			        }
+        			else
+				{
+					$header = header("Location: http://twitter.com/intent/tweet?text=$tweet&source=clicktotweet&hashtags=$url");
+					return $header;
+					if(!$header)
+					{	
+						//throw an error
+						return define("ERROR_422", TRUE);
+					}
+				}
+			}
+		}
+		$this->load->view('welcome_message');
+	}
+}
+
+/* End of file welcome.php */
+/* Location: ./application/controllers/welcome.php */

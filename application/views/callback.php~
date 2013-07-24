@@ -1,0 +1,49 @@
+<?php
+
+session_start();
+
+ require 'twitter-oauth/twitteroauth.php';
+
+
+  $consumerKey = 'mu03cTzgKXinoFn9EPWhg';
+  $consumerSecret = 'usLWSCMMjoPxkhO93oUALG8op6bCDk3n4rUiQtss';
+  $oAuthToken = '526068370-nicXSHoIx1eFOIxhXeyWprRY2FmOvCwKUhXiwZIs';
+  $oAuthSecret = '6zqN6isb5m8JKEd3xC4vZzpBekN1Df0pjDplPOSrM';
+
+$oauth = new TwitterOAuth($consumerKey, $consumerSecret,
+ $_SESSION['oauth_token'],
+ $_SESSION['oauth_token_secret']);
+
+
+
+$array=$oauth->getAccessToken($_GET['oauth_verifier']) ;
+
+
+/*Permanent access tokens*/
+
+
+$_SESSION["access_token"]=$array['oauth_token'];
+
+$_SESSION["access_token_secret"]=$array['oauth_token_secret'];
+
+$_SESSION["username"]=$array['screen_name'];
+
+$_SESSION["userid"]=$array['user_id'];
+
+
+
+/* Connect with Twitter API for accessing services */ 
+
+
+$connection = new TwitterOAuth($consumerKey, $consumerSecret, $_SESSION["access_token"],$_SESSION["access_token_secret"]);
+
+
+
+$parameters = array('status' => "Hello World");
+
+$status = $connection->post('statuses/update', $parameters);
+
+print_r($status);
+
+
+?>
