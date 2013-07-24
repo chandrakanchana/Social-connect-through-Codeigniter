@@ -40,4 +40,4 @@ Views<br/>
 
 <b>SCREENSHOT</b>
 
-<img style="max-width:100%;" src="https://github.com/kanchana-nyros/CodeigniterApp/raw/master/screenshots/CodeigniterApp.png" alt="CodeigniterApp" title="CodeigniterApp">
+<img style="max-width:100%;" src="https://github.com/kanchana-nyros/Social-connect-through-Codeigniter/blob/master/screenshots/CodeigniterApp.png" alt="CodeigniterApp" title="CodeigniterApp">
